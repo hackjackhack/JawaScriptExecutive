@@ -41,6 +41,9 @@ import static org.junit.Assert.assertEquals;
 public class ExecutorTest {
     @Test
     public void testExecute1() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+alert('aaa');
+        */);
         String answer = MultiLineStringLiteral.S(/*
 */);
 
@@ -51,6 +54,31 @@ public class ExecutorTest {
 
     @Test
     public void testExecute2() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+var arr = [5,1, 6,2,9];
+function insertion_sort(arr) {
+    for (var i = 0 ; i < arr.length ; i++) {
+        var min = arr[i];
+        var minp = i;
+        for (var j = i + 1; j < arr.length ; j++) {
+            if (arr[j] < min) {
+                min = arr[j];
+                minp = j;
+            }
+        }
+        arr[minp] = arr[i];
+        arr[i] = min;
+    }
+}
+
+function test() {
+    var ret = '';
+    insertion_sort(arr);
+    for (var i = 0 ; i < arr.length ; i++)
+        ret += ' ' + arr[i];
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 1 2 5 6 9
 */);
@@ -62,6 +90,30 @@ public class ExecutorTest {
 
     @Test
     public void testExecute3() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+var arr = [454, 527, 739, 945, 903, 660, 348, 103, 494, 182, 607, 297, 301, 598, 255, 461, 575, 59, 865, 161, 57, 131, 980, 832, 251, 639, 180, 265, 582, 898, 333, 906, 63, 40, 462, 920, 440, 722, 852, 49, 151, 577, 30, 516, 352, 756, 943, 328, 923, 253, 779, 814, 452, 956, 881, 905, 961, 543, 329, 458, 520, 139, 129, 993, 203, 723, 682, 931, 896, 475, 457, 224, 907, 506, 167, 969, 712, 320, 792, 675, 341, 949, 90, 757, 557, 515, 744, 456, 567, 646, 820, 478, 928, 785, 600, 414, 209, 73, 629, 746];
+function insertion_sort(arr) {
+    for (var i = 0 ; i < arr.length ; i++) {
+        var min = arr[i];
+        var minp = i;
+        for (var j = i + 1; j < arr.length ; j++) {
+            if (arr[j] < min) {
+                min = arr[j];
+                minp = j;
+            }
+        }
+        arr[minp] = arr[i];
+        arr[i] = min;
+    }
+}
+function test() {
+    var ret = '';
+    insertion_sort(arr);
+    for (var i = 0 ; i < arr.length ; i++)
+        ret += ' ' + arr[i];
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 30 40 49 57 59 63 73 90 103 129 131 139 151 161 167 180 182 203 209 224 251 253 255 265 297 301 320 328 329 333 341 348 352 414 440 452 454 456 457 458 461 462 475 478 494 506 515 516 520 527 543 557 567 575 577 582 598 600 607 629 639 646 660 675 682 712 722 723 739 744 746 756 757 779 785 792 814 820 832 852 865 881 896 898 903 905 906 907 920 923 928 931 943 945 949 956 961 969 980 993
 */);
@@ -73,6 +125,16 @@ public class ExecutorTest {
 
     @Test
     public void testExecute4() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+var a = {
+    first : [
+        'a', 'b', 1,
+    ],
+    second : {
+        inner : ['a', 1, 2 ],
+    }
+};
+        */);
         JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"first\",\"5\":{\"t\":27,\"7\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,a\"},{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,b\"},{\"t\":25,\"1\":\"R\",\"8\":\"NUMERIC_LITERAL,1.0\"}]}},{\"t\":39,\"4\":\"second\",\"5\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"inner\",\"5\":{\"t\":27,\"7\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,a\"},{\"t\":25,\"1\":\"R\",\"8\":\"NUMERIC_LITERAL,1.0\"},{\"t\":25,\"1\":\"R\",\"8\":\"NUMERIC_LITERAL,2.0\"}]}}]}}]}}]}]}");
         Executor ex = new Executor(json);
         ex.execute(new JSONObject());
@@ -80,6 +142,19 @@ public class ExecutorTest {
 
     @Test
     public void testExecute5() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test(a, b, c) {
+    return a * (b + c) >> 2;
+}
+function test2(x) {
+    return test(x, 2*x, 3*x);
+}
+
+function test3() {
+    var xxx = test2(2);
+    return xxx;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 5
 */);
@@ -91,6 +166,23 @@ public class ExecutorTest {
 
     @Test
     public void testExecute6() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var a = 1, b = 2;
+    alert(a == 2 || b == 1 && a == b);
+    ret += (a == 2 || b == 1 && a == b);
+    a = b == 2 ? 'XX' : 4;
+    alert(a);
+    ret += ' ' + a;
+    b = 'xx', a = 'yy';
+    alert(a);
+    ret += ' ' + a;
+    alert(b);
+    ret += ' ' + b;
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 false XX yy xx
 */);
@@ -102,6 +194,41 @@ false XX yy xx
 
     @Test
     public void testExecute7() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+var ret = '';
+var i = 0;
+do {
+    i += 1;
+    ret += ' ' + i;
+} while (i < 5);
+
+if (i % 2 == 0) {
+    ret += ' Even';
+} else {
+    ret += ' Odd';
+}
+
+var str = 'ABCDE';
+for (var c in str) {
+    ret += ' ' + str[c];
+}
+
+while (i < 100) {
+    if (i % 20 == 0) {
+        i += 1;
+        continue;
+    }
+    if (i % 5 == 0)
+        ret += ' ' + i;
+    if (i == 79)
+        break;
+    i += 1;
+}
+ret += ' ' + i;
+return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
  1 2 3 4 5 Odd A B C D E 5 10 15 25 30 35 45 50 55 65 70 75 79
 */);
@@ -128,6 +255,14 @@ f289312bab96ac228052215e4c9759e9
 
     @Test
     public void testExecute9() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function getAdTag() {
+    var tagUrl = "http://m.loopme.com?unit=2342342&locale=%%LOCALE%%";
+    var lang = getenv("LANG2").toLowerCase();
+    var country = getenv("COUNTRY3").toLowerCase();
+    return tagUrl.replace("%%LOCALE%%", lang + "_" + country);
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan
 */);
@@ -143,6 +278,20 @@ http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan
 
     @Test
     public void testExecute10() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var src = "this is a string test";
+    var i = src.indexOf('string');
+    ret += i;
+    i = src.lastIndexOf('s');
+    ret += ' ' + i;
+    var src2 = '   XXX YYYY    \t';
+    var out = '!!!' + src2.trim() + '!!!';
+    ret += out;
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 10 19!!!XXX YYYY!!!
 */);
@@ -154,6 +303,22 @@ http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan
 
     @Test
     public void testExecute11() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var arr = ['a', 'b', 5.0, 6, true, 'abc', 'xxx'];
+    var obj = {a: 12, b: true, cc: 'XX'};
+
+    ret += (5 in arr) + '!!';
+    ret += (7 in arr) + '!!';
+    ret += ('length' in arr) + '!!';
+    ret += ('nono' in arr) + "!!";
+    ret += ('a' in obj) + "!!";
+    ret += ('c' in obj) + "!!";
+    ret += ('b' in obj) + "!!";
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 true!!false!!true!!false!!true!!false!!true!!
 */);
@@ -165,6 +330,29 @@ true!!false!!true!!false!!true!!false!!true!!
 
     @Test
     public void testExecute12() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var arr1 = [454, 527, 739, 945, 903, 660, 348, 103, 494, 182, 607, 297, 301, 598, 255, 461, 575, 59, 865, 161, 57, 131, 980, 832, 251, 639, 180, 265, 582, 898, 333, 906, 63, 40, 462, 920, 440, 722, 852, 49, 151, 577, 30, 516, 352, 756, 943, 328, 923, 253, 779, 814, 452, 956, 881, 905, 961, 543, 329, 458, 520, 139, 129, 993, 203, 723, 682, 931, 896, 475, 457, 224, 907, 506, 167, 969, 712, 320, 792, 675, 341, 949, 90, 757, 557, 515, 744, 456, 567, 646, 820, 478, 928, 785, 600, 414, 209, 73, 629, 746];
+    arr1.sort();
+    var ret = '';
+    for (var i = 0 ; i < arr1.length ; i++)
+        ret += ' ' + arr1[i];
+    return ret;
+}
+
+function c(l, r) {
+    return l - r;
+}
+
+function test2() {
+var arr1 = [454, 527, 739, 945, 903, 660, 348, 103, 494, 182, 607, 297, 301, 598, 255, 461, 575, 59, 865, 161, 57, 131, 980, 832, 251, 639, 180, 265, 582, 898, 333, 906, 63, 40, 462, 920, 440, 722, 852, 49, 151, 577, 30, 516, 352, 756, 943, 328, 923, 253, 779, 814, 452, 956, 881, 905, 961, 543, 329, 458, 520, 139, 129, 993, 203, 723, 682, 931, 896, 475, 457, 224, 907, 506, 167, 969, 712, 320, 792, 675, 341, 949, 90, 757, 557, 515, 744, 456, 567, 646, 820, 478, 928, 785, 600, 414, 209, 73, 629, 746];
+    arr1.sort(c);
+    var ret = '';
+    for (var i = 0 ; i < arr1.length ; i++)
+        ret += ' ' + arr1[i];
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
  103 129 131 139 151 161 167 180 182 203 209 224 251 253 255 265 297 30 301 320 328 329 333 341 348 352 40 414 440 452 454 456 457 458 461 462 475 478 49 494 506 515 516 520 527 543 557 567 57 575 577 582 59 598 600 607 629 63 639 646 660 675 682 712 722 723 73 739 744 746 756 757 779 785 792 814 820 832 852 865 881 896 898 90 903 905 906 907 920 923 928 931 943 945 949 956 961 969 980 993
 */);
@@ -180,6 +368,26 @@ true!!false!!true!!false!!true!!false!!true!!
 
     @Test
     public void testExecute13() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var arr = [1,2,3,4,5];
+    ret += arr;
+    arr.push(8);
+    arr.push(7);
+    arr.unshift(100);
+    ret += "!!!" + arr.pop() + "!!!";
+    arr.push('XXX');
+    arr.unshift('YYY');
+    arr.pop();
+    arr.shift();
+    ret += arr;
+    arr.reverse();
+    ret += "!!!" + arr;
+    ret += "!!!" + arr.slice(2, 5);
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 1,2,3,4,5!!!7!!!100,1,2,3,4,5,8!!!8,5,4,3,2,1,100!!!4,3,2
 */);
@@ -191,6 +399,22 @@ true!!false!!true!!false!!true!!false!!true!!
 
     @Test
     public void testExecute14() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var str = 'this is a test STRING';
+    var arr = str.split(' ');
+    ret += arr;
+    ret += "!!!" + str.substring(5, 10);
+    ret += "!!!" + arr.length;
+    ret += "!!!" + str.charCodeAt(11);
+    ret += "!!!" + str.indexOf('is');
+    ret += "!!!" + str.indexOf('is', 4);
+    ret += "!!!" + str.lastIndexOf('is');
+    ret += "!!!" + str.lastIndexOf('is', 4);
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 this,is,a,test,STRING!!!is a !!!5!!!101!!!2!!!5!!!5!!!2
 */);
@@ -202,6 +426,22 @@ this,is,a,test,STRING!!!is a !!!5!!!101!!!2!!!5!!!5!!!2
 
     @Test
     public void testExecute15() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var x = 123456789;
+    ret += "!!!" + (x - 123);
+    ret += "!!!" + (x * 123);
+    ret += "!!!" + (x / 123);
+    ret += "!!!" + (x % 123);
+    x -= 56789;
+    x *= 0.5;
+    x /= 56789;
+    x %= 1357;
+    ret += "!!!" + x;
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 !!!123456666!!!15185185047!!!1003713.731707317!!!90!!!1086.4780151085597
 */);
@@ -213,6 +453,59 @@ this,is,a,test,STRING!!!is a !!!5!!!101!!!2!!!5!!!5!!!2
 
     @Test
     public void testExecute16() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var ret = '';
+    var src = 'abcdefghijklmnopqrstuvwxyz';
+    for (var i in src) {
+        var c = src[i];
+        if (c == 'e' || c == 'u')
+            continue;
+        else if (c == 'x')
+            break;
+        else
+            ret += c;
+    }
+    return ret;
+}
+
+function test2() {
+    var ret = '';
+    var arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+    for (var i in arr) {
+        var c = arr[i];
+        if (c == 5 || c == 12)
+            continue;
+        else if (c == 14)
+            break;
+        else
+            ret += c;
+    }
+    return ret;
+}
+
+function test3() {
+    var ret = '';
+    var obj = {
+        abc: 'xxx',
+        cde: 'yyy',
+        x: 1,
+        y: 2,
+        z: 3,
+    };
+    for (var i in obj) {
+        var c = obj[i];
+
+        if (i == 'cde')
+            continue;
+        else if (c == 2)
+            break;
+        else
+            ret += "!!!" + i + "=" + c;;
+    }
+    return ret;
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 abcdfghijklmnopqrstvw
 */);
@@ -232,6 +525,14 @@ abcdfghijklmnopqrstvw
 
     @Test
     public void testExecute17() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function getAdTag() {
+    var tagUrl = "http://m.loopme.com?unit=2342342&locale=%%LOCALE%%";
+    var lang = extern("LANG2").toLowerCase();
+    var country = extern("COUNTRY3").toLowerCase();
+    return tagUrl.replace("%%LOCALE%%", lang + "_" + country);
+}
+        */);
         String answer = MultiLineStringLiteral.S(/*
 http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan
 */);
