@@ -959,8 +959,10 @@ public class Executor {
         for (int i = 1 ; i < oprnds.length() ; i++) {
             JawaObjectRef secondOprnd = evaluate(oprnds.getJSONObject(i));
             String op = ops.getJSONObject(i - 1).getString("v");
-            if (firstOprnd == null || secondOprnd == null)
-                throw new JawascriptRuntimeException("relational ops cannot have null operands");
+            if (firstOprnd == null)
+                firstOprnd = new JawaObjectRef(0);
+            if (secondOprnd == null)
+                secondOprnd = new JawaObjectRef(0);
             if (op.equals("<")) {
                 if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder) {
                     firstOprnd = new JawaObjectRef(firstOprnd.object.toString().compareTo(secondOprnd.object.toString()) < 0);
