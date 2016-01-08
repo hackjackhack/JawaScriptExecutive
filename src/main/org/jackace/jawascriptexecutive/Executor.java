@@ -1675,9 +1675,9 @@ public class Executor {
         return new JawaObjectRef(obj);
     }
 
-    public Executor(JSONObject tree)
+    public Executor()
     {
-        program = tree;
+
         currentActivation = new LinkedList<HashMap<String, JawaObjectRef>>();
         currentActivation.addLast(global);
         activations.addLast(currentActivation);
@@ -1717,12 +1717,12 @@ public class Executor {
         externalCallback = cb;
     }
 
-    public void execute(JSONObject input) throws JSONException, JawascriptRuntimeException {
-        env = input;
+    public void execute(JSONObject ast) throws JSONException, JawascriptRuntimeException {
+        program = ast;
         evaluate(program);
     }
 
-    public String invoke(String funcName, JSONObject input) throws JSONException, JawascriptRuntimeException {
+    public JSONObject invoke(String funcName, JSONObject input) throws JSONException, JawascriptRuntimeException {
         env = input;
         JawaObjectRef func = global.get(funcName);
         JawaFunc resolvedFunction = (JawaFunc)(func.object);
@@ -1738,6 +1738,26 @@ public class Executor {
         activations.removeLast();
         currentActivation = activations.getLast();
         isFromCallExpression = oldIsFromCallExpression;
-        return ret.toString();
+
+        JSONObject retJSON = new JSONObject();
+        if (ret == null || ret.object == null) {
+            retJSON.put("retType", "null");
+        } else if (ret.object instanceof JawaArray) {
+            retJSON.put("retType", "array");
+            retJSON.put("retValue", new JSONArray("[" + ret.toString() + "]"));
+        } else if (ret.object instanceof JawaObject) {
+            retJSON.put("retType", "object");
+            retJSON.put("retValue", new JSONObject(ret.toString()));
+        } else if (ret.object instanceof StringBuilder){
+            retJSON.put("retType", "string");
+            retJSON.put("retValue", ret.toString());
+        } else if (ret.object instanceof Double){
+            retJSON.put("retType", "number");
+            retJSON.put("retValue", ret.object);
+        } else if (ret.object instanceof Boolean) {
+            retJSON.put("retType", "boolean");
+            retJSON.put("retValue", ret.object.toString());
+        }
+        return retJSON;
     }
 }
