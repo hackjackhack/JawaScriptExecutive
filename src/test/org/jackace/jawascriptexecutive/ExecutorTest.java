@@ -553,4 +553,29 @@ http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan
         ex.execute(new JSONObject());
         assertEquals(ex.invoke("getAdTag", null).trim(), answer.trim());
     }
+
+    @Test
+    public void testExecute18() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+
+function getAdTag() {
+    return {
+        method: "GET",
+        url: "http://s3-ap-northeast-1.amazonaws.com/ce-global-metadata-dev/cdn/adlist/094e05b807c34f228af5531c8f7149b8/TEST/3",
+        type: "JSON"
+    }.toJSON();
+}
+
+function convertResp(data) {
+    return {count: 0, items: []};
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+!!!123456666!!!15185185047!!!1003713.731707317!!!90!!!1086.4780151085597
+*/);
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"getAdTag\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"method\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,GET\"}},{\"t\":39,\"4\":\"url\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,http://s3-ap-northeast-1.amazonaws.com/ce-global-metadata-dev/cdn/adlist/094e05b807c34f228af5531c8f7149b8/TEST/3\"}},{\"t\":39,\"4\":\"type\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,JSON\"}}]},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toJSON\"}}}}]}},{\"t\":1,\"3\":\"convertResp\",\"23\":[\"data\"],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"count\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"NUMERIC_LITERAL,0.0\"}},{\"t\":39,\"4\":\"items\",\"5\":{\"t\":27,\"7\":[]}}]}}]}}]}");
+        Executor ex = new Executor(json);
+        ex.execute(new JSONObject());
+        System.out.println(ex.invoke("getAdTag", null));
+    }
 }

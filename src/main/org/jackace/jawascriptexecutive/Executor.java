@@ -252,9 +252,31 @@ public class Executor {
         JawaObjectRef invokeBuiltin(String funcName) throws JawascriptRuntimeException {
             int id = getBuiltinID(funcName);
             switch (id) {
+                // toJSON()
+                case 0: {
+                    return new JawaObjectRef(this.toString());
+                }
                 default:
                     throw new JawascriptRuntimeException(funcName + "() not yet implemented.");
             }
+        }
+
+        public String toString() {
+            String ret = "{";
+            boolean first = true;
+            for (String key : this.properties.keySet()) {
+                if (!first)
+                    ret += ",";
+                first = false;
+                ret += "\"" + key + "\":";
+                JawaObjectRef value = this.properties.get(key);
+                if (value.object instanceof StringBuilder)
+                    ret += "\"" + value.toString() + "\"";
+                else
+                    ret += value.toString();
+            }
+            ret += "}";
+            return ret;
         }
     }
 
@@ -1687,6 +1709,8 @@ public class Executor {
         registerBuiltinFunc(stringPrototype, "indexOf", Arrays.asList("searchvalue", "start"));
         registerBuiltinFunc(stringPrototype, "lastIndexOf", Arrays.asList("searchvalue", "start"));
         registerBuiltinFunc(stringPrototype, "trim", VOID);
+
+        registerBuiltinFunc(objectPrototype, "toJSON", VOID);
     }
 
     public void registerExternalCallback(ExternalCallback cb) {
