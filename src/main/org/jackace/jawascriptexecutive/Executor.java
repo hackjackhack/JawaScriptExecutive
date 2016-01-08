@@ -224,9 +224,9 @@ public class Executor {
     }
 
     ////////////////////////////////////////////////////
-    private HashMap<String, JawaFunc> objectPrototype = new HashMap<>();
+    private HashMap<String, JawaFunc> objectPrototype = new HashMap<String, JawaFunc>();
     private class JawaObject {
-        HashMap<String, JawaObjectRef> properties = new HashMap<>();
+        HashMap<String, JawaObjectRef> properties = new HashMap<String, JawaObjectRef>();
         HashMap<String, JawaFunc> prototype;
 
         JawaObject() { this.prototype = objectPrototype; }
@@ -281,7 +281,7 @@ public class Executor {
     }
 
     ////////////////////////////////////////////////////
-    private HashMap<String, JawaFunc> arrayPrototype = new HashMap<>();
+    private HashMap<String, JawaFunc> arrayPrototype = new HashMap<String, JawaFunc>();
     private class JawaComparator implements Comparator<JawaObjectRef> {
         private JawaFunc comparator = null;
         public JawaComparator(JawaObjectRef comparator) {
@@ -290,11 +290,11 @@ public class Executor {
         }
         public int compare(JawaObjectRef lhs, JawaObjectRef rhs) {
             if (comparator != null) {
-                HashMap<String, JawaObjectRef> scope = new HashMap<>();
+                HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
                 scope.put(comparator.params.get(0), lhs);
                 scope.put(comparator.params.get(1), rhs);
 
-                LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<>();
+                LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<HashMap<String, JawaObjectRef>>();
                 activation.addLast(scope);
                 boolean oldIsFromCallExpression = isFromCallExpression;
                 isFromCallExpression = true;
@@ -317,7 +317,7 @@ public class Executor {
         }
     }
     private class JawaArray extends JawaObject {
-        ArrayList<JawaObjectRef> elements = new ArrayList<>();
+        ArrayList<JawaObjectRef> elements = new ArrayList<JawaObjectRef>();
 
         JawaArray() { this.prototype = arrayPrototype; }
 
@@ -488,7 +488,7 @@ public class Executor {
     }
 
     ////////////////////////////////////////////////////
-    private HashMap<String, JawaFunc> stringPrototype = new HashMap<>();
+    private HashMap<String, JawaFunc> stringPrototype = new HashMap<String, JawaFunc>();
     private JawaObjectRef dispatchStringBuiltin(StringBuilder str, String funcName) throws JawascriptRuntimeException {
         if (stringPrototype.get(funcName) == null)
             throw new JawascriptRuntimeException("string has no method " + funcName + "().");
@@ -593,7 +593,7 @@ public class Executor {
     }
     ////////////////////////////////////////////////////
 
-    private HashMap<String, JawaFunc> builtinFunctions = new HashMap<>();
+    private HashMap<String, JawaFunc> builtinFunctions = new HashMap<String, JawaFunc>();
     private JawaObjectRef dispatchBuiltin(String funcName) throws JawascriptRuntimeException {
         if (builtinFunctions.get(funcName) == null)
             throw new JawascriptRuntimeException("No method " + funcName + "().");
@@ -629,8 +629,8 @@ public class Executor {
 
     private JSONObject program;
     private JSONObject env;
-    private HashMap<String, JawaObjectRef> global = new HashMap<>();
-    private LinkedList<LinkedList<HashMap<String, JawaObjectRef>>> activations = new LinkedList<>();
+    private HashMap<String, JawaObjectRef> global = new HashMap<String, JawaObjectRef>();
+    private LinkedList<LinkedList<HashMap<String, JawaObjectRef>>> activations = new LinkedList<LinkedList<HashMap<String, JawaObjectRef>>>();
     private LinkedList<HashMap<String, JawaObjectRef>> currentActivation;
     private HashMap<String, JawaObjectRef> currentIterationScope = null;
     private boolean isFromCallExpression = false;
@@ -1257,7 +1257,7 @@ public class Executor {
         if (resolvedFunction.params.size() < arguments.length())
             throw new JawascriptRuntimeException("Arguments more than parameters.");
 
-        HashMap<String, JawaObjectRef> scope = new HashMap<>();
+        HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
         for (int i = 0 ; i < arguments.length() ; i++) {
             JSONObject argument = arguments.getJSONObject(i);
             JawaObjectRef evaluated = evaluate(argument);
@@ -1265,7 +1265,7 @@ public class Executor {
             scope.put(paramName, evaluated);
         }
 
-        LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<>();
+        LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<HashMap<String, JawaObjectRef>>();
         activation.addLast(scope);
         boolean oldIsFromCallExpression = isFromCallExpression;
         isFromCallExpression = true;
@@ -1413,7 +1413,7 @@ public class Executor {
         //System.out.println("Running FUNCTION_DECLARATION");
         String id = getString(ast, PR_id);
         JSONArray params = getArray(ast, PR_params);
-        LinkedList<String> param_strs = new LinkedList<>();
+        LinkedList<String> param_strs = new LinkedList<String>();
         for (int i = 0 ; i < params.length() ; i++)
             param_strs.addLast(params.getString(i));
         JSONObject body = getObj(ast, PR_body);
@@ -1451,7 +1451,7 @@ public class Executor {
         //System.out.println("Running DO_WHILE_STATEMENT");
         JSONObject body = getObj(ast, PR_body);
         JSONObject test = getObj(ast, PR_test);
-        HashMap<String, JawaObjectRef> scope = new HashMap<>();
+        HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
         currentActivation.addLast(scope);
         HashMap<String, JawaObjectRef> outerIterationScope = currentIterationScope;
         currentIterationScope = scope;
@@ -1476,7 +1476,7 @@ public class Executor {
     private JawaObjectRef execForStatement(JSONObject ast) throws JSONException, JawascriptRuntimeException {
         //System.out.println("Running FOR_STATEMENT");
         JSONObject body = getObj(ast, PR_body);
-        HashMap<String, JawaObjectRef> scope = new HashMap<>();
+        HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
         currentActivation.addLast(scope);
         HashMap<String, JawaObjectRef> outerIterationScope = currentIterationScope;
         currentIterationScope = scope;
@@ -1598,7 +1598,7 @@ public class Executor {
         //System.out.println("Running WHILE_STATEMENT");
         JSONObject body = getObj(ast, PR_body);
         JSONObject test = getObj(ast, PR_test);
-        HashMap<String, JawaObjectRef> scope = new HashMap<>();
+        HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
         currentActivation.addLast(scope);
         HashMap<String, JawaObjectRef> outerIterationScope = currentIterationScope;
         currentIterationScope = scope;
@@ -1678,7 +1678,7 @@ public class Executor {
     public Executor(JSONObject tree)
     {
         program = tree;
-        currentActivation = new LinkedList<>();
+        currentActivation = new LinkedList<HashMap<String, JawaObjectRef>>();
         currentActivation.addLast(global);
         activations.addLast(currentActivation);
 
@@ -1726,8 +1726,8 @@ public class Executor {
         env = input;
         JawaObjectRef func = global.get(funcName);
         JawaFunc resolvedFunction = (JawaFunc)(func.object);
-        HashMap<String, JawaObjectRef> scope = new HashMap<>();
-        LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<>();
+        HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
+        LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<HashMap<String, JawaObjectRef>>();
         activation.addLast(scope);
         boolean oldIsFromCallExpression = isFromCallExpression;
         isFromCallExpression = true;
