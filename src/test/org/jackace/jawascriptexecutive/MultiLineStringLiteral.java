@@ -1,4 +1,4 @@
-package test.org.jackace.jawascriptexecutive;
+package org.jackace.jawascriptexecutive;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ class MultiLineStringLiteral {
     public static String S() {
         StackTraceElement element = new RuntimeException().getStackTrace()[1];
         String name = element.getClassName().replace('.', '\\') + ".java";
-        String baseDir = System.getProperty("user.dir") + "\\src\\";
+        String baseDir = System.getProperty("user.dir") + "\\src\\test\\";
         InputStream in = null;
         try {
             in = new FileInputStream(baseDir + name);

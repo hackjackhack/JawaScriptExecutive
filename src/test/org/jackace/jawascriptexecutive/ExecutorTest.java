@@ -24,10 +24,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package test.org.jackace.jawascriptexecutive;
+package org.jackace.jawascriptexecutive;
 
-import main.org.jackace.jawascriptexecutive.Executor;
-import main.org.jackace.jawascriptexecutive.ExternalCallback;
+import org.jackace.jawascriptexecutive.Executor;
+import org.jackace.jawascriptexecutive.ExternalCallback;
 import org.json.JSONObject;
 import org.junit.Test;
 
