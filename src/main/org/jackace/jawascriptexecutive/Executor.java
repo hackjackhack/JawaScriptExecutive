@@ -621,6 +621,45 @@ public class Executor {
                     argStr = arg.toString();
                 return new JawaObjectRef(externalCallback.call(functionName, argStr));
             }
+            // parseInt(string, radix)
+            case 3: {
+                String str = currentActivation.getLast().get("string").toString().trim().toLowerCase();
+                if (str.length() == 0)
+                    return new JawaObjectRef(0);
+
+                // Sign
+                int sign = 1;
+                if (str.charAt(0) == '+' || str.charAt(0) == '-') {
+                    str = str.substring(1);
+                    sign = str.charAt(0) == '+' ? 1 : -1;
+                }
+
+                // Radix
+                int radix = 10;
+                JawaObjectRef arg2 = currentActivation.getLast().get("radix");
+                if (arg2 != null && arg2.object instanceof Double)
+                    radix = ((Double)arg2.object).intValue();
+                else if (str.length() >= 2 && str.charAt(0) == '0' && (str.charAt(1) == 'x' || str.charAt(1) == 'X')) {
+                    radix = 16;
+                    str = str.substring(2);
+                }
+
+                //
+                if (radix > 36)
+                    throw new JawascriptRuntimeException("Invalid radix : " + radix);
+                String validDigits = "0123456789abcdefghijklmnopqrstuvwxyz".substring(0, radix);
+                int end;
+                for (end = 0 ; end < str.length() ; end++) {
+                    char c = str.charAt(end);
+                    if (validDigits.indexOf(c) == -1)
+                        break;
+                }
+                str = str.substring(0, end);
+                if (str.length() == 0)
+                    return new JawaObjectRef(0);
+
+                return new JawaObjectRef(sign * Integer.parseInt(str, radix));
+            }
             default:
                 throw new JawascriptRuntimeException("BuiltIn function not found : " + funcName);
         }
@@ -1111,7 +1150,7 @@ public class Executor {
                 throw new JawascriptRuntimeException("Additive ops cannot have null operands");
             if (op.equals("+")) {
                 if (firstOprnd.object instanceof StringBuilder || secondOprnd.object instanceof StringBuilder) {
-                    firstOprnd = new JawaObjectRef(firstOprnd.object.toString() + secondOprnd.toString());
+                    firstOprnd = new JawaObjectRef(firstOprnd.toString() + secondOprnd.toString());
                 } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Double) {
                     firstOprnd = new JawaObjectRef((Double) firstOprnd.object + (Double) secondOprnd.object);
                 } else
@@ -1686,6 +1725,7 @@ public class Executor {
         registerBuiltinFunc(builtinFunctions, "alert", Collections.singletonList("msg"));
         registerBuiltinFunc(builtinFunctions, "getenv", Collections.singletonList("varname"));
         registerBuiltinFunc(builtinFunctions, "extern", Arrays.asList("functionName", "argument"));
+        registerBuiltinFunc(builtinFunctions, "parseInt", Arrays.asList("string", "radix"));
         for (String f : builtinFunctions.keySet()) {
             global.put(f, new JawaObjectRef(builtinFunctions.get(f)));
         }
