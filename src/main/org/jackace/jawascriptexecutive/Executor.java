@@ -634,16 +634,22 @@ public class Executor {
             // getenv(varname)
             case 1: {
                 String varname = currentActivation.getLast().get("varname").toString();
-                return toJawaObject(env.optJSONObject(varname));
+                JSONObject ret = env.optJSONObject(varname);
+                if (ret == null)
+                    return null;
+                return toJawaObject(ret);
             }
             // extern(functionName, argument)
             case 2: {
                 String functionName = currentActivation.getLast().get("functionName").toString();
                 JawaObjectRef arg = currentActivation.getLast().get("argument");
-                String argStr = null;
-                if (arg != null)
-                    argStr = arg.toString();
-                return toJawaObject(externalCallback.call(functionName, argStr));
+                JSONObject argJson = null;
+                if (arg != null) {
+                    if (!(arg.object instanceof JawaObject))
+                        throw new JawascriptRuntimeException("The argument for extern() must be an object");
+                    argJson = new JSONObject(((JawaObject) arg.object).toJSON());
+                }
+                return toJawaObject(externalCallback.call(functionName, argJson));
             }
             // parseInt(string, radix)
             case 3: {
@@ -682,7 +688,7 @@ public class Executor {
                 if (str.length() == 0)
                     return new JawaObjectRef(0);
 
-                return new JawaObjectRef(sign * Integer.parseInt(str, radix));
+                return new JawaObjectRef(sign * Long.parseLong(str, radix));
             }
             default:
                 throw new JawascriptRuntimeException("BuiltIn function not found : " + funcName);
@@ -1696,6 +1702,8 @@ public class Executor {
             return new JawaObjectRef(Double.parseDouble(content));
         else if (type.equals("BOOLEAN"))
             return new JawaObjectRef(Boolean.parseBoolean(content));
+        else if (type.equals("NULL"))
+            return null;
         else
             throw new JawascriptRuntimeException("Unknown literal type.");
     }
@@ -1734,6 +1742,10 @@ public class Executor {
                 obj.setProp(key, new JawaObjectRef((Boolean)val));
             else if (val instanceof Double)
                 obj.setProp(key, new JawaObjectRef((Double)val));
+            else if (val instanceof Integer)
+                obj.setProp(key, new JawaObjectRef((Integer)val));
+            else if (val instanceof Long)
+                obj.setProp(key, new JawaObjectRef((Long)val));
         }
         return new JawaObjectRef(obj);
     }

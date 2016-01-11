@@ -31,5 +31,5 @@ import org.json.JSONObject;
  * Created by Chi-Wei(Jack) Wang on 2016/1/5.
  */
 public interface ExternalCallback {
-    public JSONObject call(String functionName, String argument);
+    public JSONObject call(String functionName, JSONObject argument);
 }

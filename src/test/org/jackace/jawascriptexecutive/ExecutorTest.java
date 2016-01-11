@@ -528,22 +528,25 @@ function getAdTag() {
     var tagUrl = "http://m.loopme.com?unit=2342342&locale=%%LOCALE%%";
     var lang = extern("LANG2").value.toLowerCase();
     var country = extern("COUNTRY3").value.toLowerCase();
-    return tagUrl.replace("%%LOCALE%%", lang + "_" + country);
+    var x = extern("ttt", {xxx: {hhh:123}});
+    return tagUrl.replace("%%LOCALE%%", lang + "_" + country + "_" + x.toJSON());
 }
         */);
         String answer = MultiLineStringLiteral.S(/*
-{"retType":"string","retValue":"http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan"}
+{"retType":"string","retValue":"http://m.loopme.com?unit=2342342&locale=abcdefg_taiwan_{\"hhh\":123}"}
 */);
-        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"getAdTag\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"tagUrl\",\"27\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,http://m.loopme.com?unit=2342342&locale=%%LOCALE%%\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"lang\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,LANG2\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"extern\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"value\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toLowerCase\"}}}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"country\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,COUNTRY3\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"extern\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"value\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toLowerCase\"}}}}]},{\"t\":36,\"32\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,%%LOCALE%%\"},{\"t\":16,\"1\":\"R\",\"15\":[{\"t\":5,\"v\":\"+\"},{\"t\":5,\"v\":\"+\"}],\"16\":[{\"t\":24,\"1\":\"L\",\"3\":\"lang\"},{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,_\"},{\"t\":24,\"1\":\"L\",\"3\":\"country\"}]}]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":24,\"1\":\"L\",\"3\":\"tagUrl\"},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"replace\"}}}}]}}]}");
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"getAdTag\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"tagUrl\",\"27\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,http://m.loopme.com?unit=2342342&locale=%%LOCALE%%\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"lang\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,LANG2\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"extern\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"value\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toLowerCase\"}}}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"country\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,COUNTRY3\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"extern\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"value\"}},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toLowerCase\"}}}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"x\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,ttt\"},{\"t\":28,\"6\":[{\"t\":39,\"4\":\"xxx\",\"5\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"hhh\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"NUMERIC_LITERAL,123.0\"}}]}}]}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"extern\"}}}]},{\"t\":36,\"32\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,%%LOCALE%%\"},{\"t\":16,\"1\":\"R\",\"15\":[{\"t\":5,\"v\":\"+\"},{\"t\":5,\"v\":\"+\"},{\"t\":5,\"v\":\"+\"},{\"t\":5,\"v\":\"+\"}],\"16\":[{\"t\":24,\"1\":\"L\",\"3\":\"lang\"},{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,_\"},{\"t\":24,\"1\":\"L\",\"3\":\"country\"},{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,_\"},{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":24,\"1\":\"L\",\"3\":\"x\"},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"toJSON\"}}}]}]},\"12\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":24,\"1\":\"L\",\"3\":\"tagUrl\"},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"replace\"}}}}]}}]}");
 
         Executor ex = new Executor();
         ex.registerExternalCallback(new ExternalCallback() {
             @Override
-            public JSONObject call(String functionName, String argument) {
+            public JSONObject call(String functionName, JSONObject argument) {
                 if (functionName.equals("LANG2"))
                     return new JSONObject("{\"value\":\"abcdefg\"}");
                 else if (functionName.equals("COUNTRY3"))
                     return new JSONObject("{\"value\":\"TAIWAN\"}");
+                else if (functionName.equals("ttt"))
+                    return argument.getJSONObject("xxx");
                 else
                     return null;
             }
@@ -682,7 +685,7 @@ function test() {
 }
         */);
         String answer = MultiLineStringLiteral.S(/*
-{"retType":"object","retValue":{"xxx":[]}}
+{"retType":"object","retValue":{"yyy":"\"","xxx":[]}}
 */);
         //JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":27,\"7\":[]}}]}}]}");
         JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"xxx\",\"5\":{\"t\":27,\"7\":[]}},{\"t\":39,\"4\":\"yyy\",\"5\":{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,\\\"\"}}]}}]}}]}");
@@ -690,5 +693,38 @@ function test() {
         ex.execute(json);
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
+
+    @Test
+    public void testExecute23 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+ alert("11111");
+ var result = getLocal("result");
+ alert("IT SHOULD BE HERE!");
+}
+
+function getLocal(key) {
+ var result = getenv(key);
+ alert(key);
+ alert(result);
+ return (result != null) ? result.value : null;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"object","retValue":{"yyy":"\"","xxx":[]}}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,11111\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"alert\"}},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"result\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,result\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"getLocal\"}}}]},{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":25,\"1\":\"R\",\"8\":\"STRING_LITERAL,IT SHOULD BE HERE!\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"alert\"}}]}},{\"t\":1,\"3\":\"getLocal\",\"23\":[\"key\"],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"result\",\"27\":{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":24,\"1\":\"L\",\"3\":\"key\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"getenv\"}}}]},{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":24,\"1\":\"L\",\"3\":\"key\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"alert\"}},{\"t\":21,\"1\":\"R\",\"2\":{\"t\":26,\"1\":\"R\",\"2\":[{\"t\":24,\"1\":\"L\",\"3\":\"result\"}]},\"12\":{\"t\":24,\"1\":\"L\",\"3\":\"alert\"}},{\"t\":36,\"32\":{\"t\":6,\"1\":\"R\",\"17\":{\"t\":12,\"1\":\"R\",\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":24,\"1\":\"L\",\"3\":\"result\"},{\"t\":25,\"1\":\"R\",\"8\":\"NULL,null\"}]},\"18\":{\"t\":20,\"1\":\"L\",\"10\":{\"t\":24,\"1\":\"L\",\"3\":\"result\"},\"11\":{\"t\":24,\"1\":\"R\",\"3\":\"value\"}},\"19\":{\"t\":25,\"1\":\"R\",\"8\":\"NULL,null\"}}}]}}]}");
+        Executor ex = new Executor();
+        JSONObject result = new JSONObject();
+        result.put("value", "OK");
+
+        JSONObject params = new JSONObject();
+        params.put("result", result);
+        ex.execute(json);
+        ex.invoke("test", params);
+
+        //assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
 }
