@@ -278,6 +278,26 @@ public class Executor {
             ret += "}";
             return ret;
         }
+
+        public String toJSON() {
+            String ret = "{";
+            boolean first = true;
+            for (String key : this.properties.keySet()) {
+                if (!first)
+                    ret += ",";
+                first = false;
+                ret += "\"" + key + "\":";
+                JawaObjectRef value = this.properties.get(key);
+                if (value.object instanceof StringBuilder)
+                    ret += "\"" + value.toString().replace("\"", "\\\"") + "\"";
+                else if (value.object instanceof JawaArray)
+                    ret += ((JawaArray)value.object).toJSON();
+                else
+                    ret += value.toString();
+            }
+            ret += "}";
+            return ret;
+        }
     }
 
     ////////////////////////////////////////////////////
@@ -331,6 +351,10 @@ public class Executor {
                 ret += obj.toString();
             }
             return ret;
+        }
+
+        public String toJSON() {
+            return "[" + this.toString() + "]";
         }
 
         void append(JawaObjectRef element) {
@@ -610,7 +634,7 @@ public class Executor {
             // getenv(varname)
             case 1: {
                 String varname = currentActivation.getLast().get("varname").toString();
-                return new JawaObjectRef(env.optString(varname));
+                return toJawaObject(env.optJSONObject(varname));
             }
             // extern(functionName, argument)
             case 2: {
@@ -619,7 +643,7 @@ public class Executor {
                 String argStr = null;
                 if (arg != null)
                     argStr = arg.toString();
-                return new JawaObjectRef(externalCallback.call(functionName, argStr));
+                return toJawaObject(externalCallback.call(functionName, argStr));
             }
             // parseInt(string, radix)
             case 3: {
@@ -1784,10 +1808,10 @@ public class Executor {
             retJSON.put("retType", "null");
         } else if (ret.object instanceof JawaArray) {
             retJSON.put("retType", "array");
-            retJSON.put("retValue", new JSONArray("[" + ret.toString() + "]"));
+            retJSON.put("retValue", new JSONArray(((JawaObject)ret.object).toJSON()));
         } else if (ret.object instanceof JawaObject) {
             retJSON.put("retType", "object");
-            retJSON.put("retValue", new JSONObject(ret.toString()));
+            retJSON.put("retValue", new JSONObject(((JawaObject)ret.object).toJSON()));
         } else if (ret.object instanceof StringBuilder){
             retJSON.put("retType", "string");
             retJSON.put("retValue", ret.toString());

@@ -25,11 +25,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.jackace.jawascriptexecutive;
-
+import org.json.JSONObject;
 
 /**
  * Created by Chi-Wei(Jack) Wang on 2016/1/5.
  */
 public interface ExternalCallback {
-    public String call(String functionName, String argument);
+    public JSONObject call(String functionName, String argument);
 }
