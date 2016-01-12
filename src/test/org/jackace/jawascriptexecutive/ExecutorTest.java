@@ -727,4 +727,22 @@ function getLocal(key) {
 
         //assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute24 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    return;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"null"}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
 }

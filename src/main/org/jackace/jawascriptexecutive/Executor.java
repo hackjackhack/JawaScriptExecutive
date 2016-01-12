@@ -1648,8 +1648,12 @@ public class Executor {
 
     private JawaObjectRef execReturnStatement(JSONObject ast) throws JSONException, JawascriptRuntimeException {
         //System.out.println("Running RETURN_STATEMENT");
-        JawaObjectRef retValue = evaluate(getObj(ast, PR_argument));
-        placeReturn(retValue);
+        if (ast.has(Integer.toString(PR_argument))) {
+            JawaObjectRef retValue = evaluate(getObj(ast, PR_argument));
+            placeReturn(retValue);
+        } else {
+            placeReturn(null);
+        }
         return null;
     }
 
