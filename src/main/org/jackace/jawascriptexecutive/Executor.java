@@ -183,6 +183,8 @@ public class Executor {
                 if (Math.abs(Math.round(value) - value) < QUANTUM) {
                     return Long.toString(Math.round(value));
                 }
+            } else if (this.object instanceof Boolean) {
+                return Boolean.toString((Boolean)this.object);
             }
             if (object != null)
                 return object.toString();
@@ -254,7 +256,7 @@ public class Executor {
             switch (id) {
                 // toJSON()
                 case 0: {
-                    return new JawaObjectRef(this.toString());
+                    return new JawaObjectRef(this.toJSON());
                 }
                 default:
                     throw new JawascriptRuntimeException(funcName + "() not yet implemented.");
@@ -268,10 +270,10 @@ public class Executor {
                 if (!first)
                     ret += ",";
                 first = false;
-                ret += "\"" + key + "\":";
+                ret += key + ":";
                 JawaObjectRef value = this.properties.get(key);
                 if (value.object instanceof StringBuilder)
-                    ret += "\"" + value.toString() + "\"";
+                    ret += "'" + value.toString() + "'";
                 else
                     ret += value.toString();
             }
@@ -290,8 +292,6 @@ public class Executor {
                 JawaObjectRef value = this.properties.get(key);
                 if (value.object instanceof StringBuilder)
                     ret += "\"" + value.toString().replace("\"", "\\\"") + "\"";
-                else if (value.object instanceof JawaArray)
-                    ret += ((JawaArray)value.object).toJSON();
                 else
                     ret += value.toString();
             }
@@ -343,18 +343,19 @@ public class Executor {
 
         public String toString() {
             boolean first = true;
-            String ret = "";
+            String ret = "[";
             for (JawaObjectRef obj : this.elements) {
                 if (!first)
                     ret += ",";
                 first = false;
                 ret += obj.toString();
             }
+            ret += "]";
             return ret;
         }
 
         public String toJSON() {
-            return "[" + this.toString() + "]";
+            return toString();
         }
 
         void append(JawaObjectRef element) {
