@@ -292,6 +292,8 @@ public class Executor {
                 JawaObjectRef value = this.properties.get(key);
                 if (value.object instanceof StringBuilder)
                     ret += "\"" + value.toString().replace("\"", "\\\"") + "\"";
+                else if (value.object instanceof JawaArray)
+                    ret += ((JawaArray)(value.object)).toJSON();
                 else
                     ret += value.toString();
             }
@@ -355,7 +357,19 @@ public class Executor {
         }
 
         public String toJSON() {
-            return toString();
+            boolean first = true;
+            String ret = "[";
+            for (JawaObjectRef obj : this.elements) {
+                if (!first)
+                    ret += ",";
+                first = false;
+                if (obj.object instanceof StringBuilder)
+                    ret += '"' + obj.toString() + '"';
+                else
+                    ret += obj.toString();
+            }
+            ret += "]";
+            return ret;
         }
 
         void append(JawaObjectRef element) {
