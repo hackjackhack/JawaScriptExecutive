@@ -633,7 +633,7 @@ public class Executor {
     ////////////////////////////////////////////////////
 
     private HashMap<String, JawaFunc> builtinFunctions = new HashMap<String, JawaFunc>();
-    private JawaObjectRef dispatchBuiltin(String funcName) throws JawascriptRuntimeException {
+    private JawaObjectRef dispatchBuiltin(String funcName) throws JawascriptRuntimeException, JSONException {
         if (builtinFunctions.get(funcName) == null)
             throw new JawascriptRuntimeException("No method " + funcName + "().");
         int funcId = builtinFunctions.get(funcName).switchId;
