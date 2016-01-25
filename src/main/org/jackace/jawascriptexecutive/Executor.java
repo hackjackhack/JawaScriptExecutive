@@ -367,6 +367,10 @@ public class Executor {
                 first = false;
                 if (obj.object instanceof StringBuilder)
                     ret += '"' + obj.toString() + '"';
+                else if (obj.object instanceof JawaArray)
+                    ret += ((JawaArray)obj.object).toJSON();
+                else if (obj.object instanceof JawaObject)
+                    ret += ((JawaObject)obj.object).toJSON();
                 else
                     ret += obj.toString();
             }
