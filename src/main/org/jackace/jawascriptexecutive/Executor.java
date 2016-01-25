@@ -294,6 +294,8 @@ public class Executor {
                     ret += "\"" + value.toString().replace("\"", "\\\"") + "\"";
                 else if (value.object instanceof JawaArray)
                     ret += ((JawaArray)(value.object)).toJSON();
+                else if (value.object instanceof JawaObject)
+                    ret += ((JawaObject)(value.object)).toJSON();
                 else
                     ret += value.toString();
             }

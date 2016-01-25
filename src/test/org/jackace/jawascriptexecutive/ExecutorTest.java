@@ -972,4 +972,24 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute28 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var o = {kkk:{aaa:123}};
+    o[123] = ['XXXXX'];
+    return o.toJSON();
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"string","retValue":"{\"123\":[\"XXXXX\"],\"kkk\":{\"aaa\":123}}"}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"o\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"kkk\",\"5\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"aaa\",\"5\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,123.0\"}}]}}]}}]},{\"t\":5,\"14\":\"PUNCTUATOR,=\",\"20\":{\"t\":22,\"10\":{\"t\":24,\"3\":\"o\"},\"11\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,123.0\"}},\"21\":{\"t\":27,\"7\":[{\"t\":25,\"8\":\"STRING_LITERAL,XXXXX\"}]}},{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"o\"},\"11\":{\"t\":24,\"3\":\"toJSON\"}}}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
 }
