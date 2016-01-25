@@ -992,4 +992,50 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute29 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    return getenv('lala');
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"array","retValue":[1,2,3]}
+*/);
+        JSONArray adlist = new JSONArray();
+        adlist.put(1);
+        adlist.put(2);
+        adlist.put(3);
+        JSONObject params = new JSONObject();
+        params.put("lala", adlist);
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":25,\"8\":\"STRING_LITERAL,lala\"}]},\"12\":{\"t\":24,\"3\":\"getenv\"}}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", params).toString().trim());
+    }
+
+    @Test
+    public void testExecute30 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    return ['aaa', 1,2,3].join('/');
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"string","retValue":"aaa/1/2/3"}
+*/);
+        JSONArray adlist = new JSONArray();
+        adlist.put(1);
+        adlist.put(2);
+        adlist.put(3);
+        JSONObject params = new JSONObject();
+        params.put("lala", adlist);
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":25,\"8\":\"STRING_LITERAL,/\"}]},\"12\":{\"t\":20,\"10\":{\"t\":27,\"7\":[{\"t\":25,\"8\":\"STRING_LITERAL,aaa\"},{\"t\":25,\"8\":\"NUMERIC_LITERAL,1.0\"},{\"t\":25,\"8\":\"NUMERIC_LITERAL,2.0\"},{\"t\":25,\"8\":\"NUMERIC_LITERAL,3.0\"}]},\"11\":{\"t\":24,\"3\":\"join\"}}}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", params).toString().trim());
+    }
 }

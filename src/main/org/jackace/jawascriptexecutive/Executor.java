@@ -256,7 +256,7 @@ public class Executor {
             switch (id) {
                 // toJSON()
                 case 0: {
-                    return new JawaObjectRef(this.toJSON());
+                    return new JawaObjectRef(this.toJSON(null).toString());
                 }
                 default:
                     throw new JawascriptRuntimeException(funcName + "() not yet implemented.");
@@ -281,25 +281,27 @@ public class Executor {
             return ret;
         }
 
-        public String toJSON() {
-            String ret = "{";
+        public StringBuilder toJSON(StringBuilder ret) {
+            if (ret == null)
+                ret = new StringBuilder();
+            ret.append("{");
             boolean first = true;
             for (String key : this.properties.keySet()) {
                 if (!first)
-                    ret += ",";
+                    ret.append(",");
                 first = false;
-                ret += "\"" + key + "\":";
+                ret.append("\"").append(key).append("\":");
                 JawaObjectRef value = this.properties.get(key);
                 if (value.object instanceof StringBuilder)
-                    ret += "\"" + value.toString().replace("\"", "\\\"") + "\"";
+                    ret.append("\"").append(value.toString().replace("\"", "\\\"")).append("\"");
                 else if (value.object instanceof JawaArray)
-                    ret += ((JawaArray)(value.object)).toJSON();
+                    ((JawaArray)(value.object)).toJSON(ret);
                 else if (value.object instanceof JawaObject)
-                    ret += ((JawaObject)(value.object)).toJSON();
+                    ((JawaObject)(value.object)).toJSON(ret);
                 else
-                    ret += value.toString();
+                    ret.append(value.toString());
             }
-            ret += "}";
+            ret.append("}");
             return ret;
         }
     }
@@ -358,23 +360,25 @@ public class Executor {
             return ret;
         }
 
-        public String toJSON() {
+        public StringBuilder toJSON(StringBuilder ret) {
+            if (ret == null)
+                ret = new StringBuilder();
             boolean first = true;
-            String ret = "[";
+            ret.append("[");
             for (JawaObjectRef obj : this.elements) {
                 if (!first)
-                    ret += ",";
+                    ret.append(",");
                 first = false;
                 if (obj.object instanceof StringBuilder)
-                    ret += '"' + obj.toString() + '"';
+                    ret.append('"').append(obj.toString()).append('"');
                 else if (obj.object instanceof JawaArray)
-                    ret += ((JawaArray)obj.object).toJSON();
+                    ((JawaArray)obj.object).toJSON(ret);
                 else if (obj.object instanceof JawaObject)
-                    ret += ((JawaObject)obj.object).toJSON();
+                    ((JawaObject)obj.object).toJSON(ret);
                 else
-                    ret += obj.toString();
+                    ret.append(obj.toString());
             }
-            ret += "]";
+            ret.append("]");
             return ret;
         }
 
@@ -432,14 +436,14 @@ public class Executor {
                     JawaObjectRef sep = currentActivation.getLast().get("sep");
                     if (!(sep.object instanceof StringBuilder))
                         throw new JawascriptRuntimeException("separator must be a string");
-                    String sepStr = sep.object.toString();
+                    String sepStr = sep.toString();
                     String ret = "";
                     boolean first = true;
                     for (JawaObjectRef o : elements) {
                         if (!first)
                             ret += sepStr;
                         first = false;
-                        ret += o.object.toString();
+                        ret += o.toString();
                     }
                     return new JawaObjectRef(ret);
                 }
@@ -655,10 +659,26 @@ public class Executor {
             // getenv(varname)
             case 1: {
                 String varname = currentActivation.getLast().get("varname").toString();
-                JSONObject ret = env.optJSONObject(varname);
-                if (ret == null)
+                if (env.has(varname)) {
+                    Object ret = env.opt(varname);
+                    if (ret instanceof JSONObject)
+                        return toJawaObject((JSONObject)ret);
+                    else if (ret instanceof JSONArray)
+                        return toJawaArray((JSONArray)ret);
+                    else if (ret instanceof String)
+                        return new JawaObjectRef((String)ret);
+                    else if (ret instanceof Integer)
+                        return new JawaObjectRef((Integer)ret);
+                    else if (ret instanceof Long)
+                        return new JawaObjectRef((Long)ret);
+                    else if (ret instanceof Double)
+                        return new JawaObjectRef((Double)ret);
+                    else if (ret instanceof Boolean)
+                        return new JawaObjectRef((Boolean)ret);
                     return null;
-                return toJawaObject(ret);
+                } else
+                    return null;
+
             }
             // extern(functionName, argument)
             case 2: {
@@ -668,7 +688,7 @@ public class Executor {
                 if (arg != null) {
                     if (!(arg.object instanceof JawaObject))
                         throw new JawascriptRuntimeException("The argument for extern() must be an object");
-                    argJson = new JSONObject(((JawaObject) arg.object).toJSON());
+                    argJson = new JSONObject(((JawaObject) arg.object).toJSON(null).toString());
                 }
                 return toJawaObject(externalCallback.call(functionName, argJson));
             }
@@ -1750,10 +1770,14 @@ public class Executor {
                 arr.append(toJawaArray((JSONArray) val));
             else if (val instanceof String)
                 arr.append(new JawaObjectRef(val.toString()));
+            else if (val instanceof Integer)
+                arr.append(new JawaObjectRef((Integer)val));
             else if (val instanceof Boolean)
                 arr.append(new JawaObjectRef((Boolean)val));
             else if (val instanceof Double)
                 arr.append(new JawaObjectRef((Double)val));
+            else if (val instanceof Long)
+                arr.append(new JawaObjectRef((Long)val));
         }
         return new JawaObjectRef(arr);
     }
@@ -1770,12 +1794,12 @@ public class Executor {
                 obj.setProp(key, toJawaArray((JSONArray) val));
             else if (val instanceof String)
                 obj.setProp(key, new JawaObjectRef(val.toString()));
+            else if (val instanceof Integer)
+                obj.setProp(key, new JawaObjectRef((Integer)val));
             else if (val instanceof Boolean)
                 obj.setProp(key, new JawaObjectRef((Boolean)val));
             else if (val instanceof Double)
                 obj.setProp(key, new JawaObjectRef((Double)val));
-            else if (val instanceof Integer)
-                obj.setProp(key, new JawaObjectRef((Integer)val));
             else if (val instanceof Long)
                 obj.setProp(key, new JawaObjectRef((Long)val));
         }
@@ -1852,10 +1876,10 @@ public class Executor {
             retJSON.put("retType", "null");
         } else if (ret.object instanceof JawaArray) {
             retJSON.put("retType", "array");
-            retJSON.put("retValue", new JSONArray(((JawaObject)ret.object).toJSON()));
+            retJSON.put("retValue", new JSONArray(((JawaObject)ret.object).toJSON(null).toString()));
         } else if (ret.object instanceof JawaObject) {
             retJSON.put("retType", "object");
-            retJSON.put("retValue", new JSONObject(((JawaObject)ret.object).toJSON()));
+            retJSON.put("retValue", new JSONObject(((JawaObject)ret.object).toJSON(null).toString()));
         } else if (ret.object instanceof StringBuilder){
             retJSON.put("retType", "string");
             retJSON.put("retValue", ret.toString());
