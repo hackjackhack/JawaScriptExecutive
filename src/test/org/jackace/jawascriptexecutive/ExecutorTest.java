@@ -26,13 +26,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.jackace.jawascriptexecutive;
 
-import org.jackace.jawascriptexecutive.Executor;
-import org.jackace.jawascriptexecutive.ExternalCallback;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -934,5 +931,25 @@ function test() {
         ex.execute(json);
 
         assertEquals(answer.trim(), ex.invoke("test", params).toString().trim());
+    }
+
+    @Test
+    public void testExecute26 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var o = {};
+    o[123] = 456;
+    return o;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"object","retValue":{"123":456}}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"o\",\"27\":{\"t\":28,\"6\":[]}}]},{\"t\":5,\"14\":\"PUNCTUATOR,=\",\"20\":{\"t\":22,\"10\":{\"t\":24,\"3\":\"o\"},\"11\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,123.0\"}},\"21\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,456.0\"}},{\"t\":36,\"32\":{\"t\":24,\"3\":\"o\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
 }

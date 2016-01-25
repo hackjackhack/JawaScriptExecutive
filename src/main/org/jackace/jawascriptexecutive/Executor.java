@@ -832,6 +832,13 @@ public class Executor {
                         ((JawaObject) obj.object).setProp(property, right);
                         return right;
                     }
+                } else if (leftExpr.getInt("t") == COMPUTED_MEMBER_EXPRESSION) {
+                    JawaObjectRef obj = evaluate(getObj(leftExpr, PR_object));
+                    if (obj != null && obj.object instanceof JawaObject) {
+                        String property = evaluate(getObj(leftExpr, PR_property)).toString();
+                        ((JawaObject) obj.object).setProp(property, right);
+                        return right;
+                    }
                 }
             }
             throw new JawascriptRuntimeException("Left operand of = is null.");
