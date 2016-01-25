@@ -403,6 +403,7 @@ public class Executor {
         JawaObjectRef invokeBuiltin(String funcName) throws JawascriptRuntimeException {
             int id = getBuiltinID(funcName);
             switch (id) {
+
                 // Array.length
                 case 0: {
                     return new JawaObjectRef(this.elements.size());
@@ -661,21 +662,7 @@ public class Executor {
                 String varname = currentActivation.getLast().get("varname").toString();
                 if (env.has(varname)) {
                     Object ret = env.opt(varname);
-                    if (ret instanceof JSONObject)
-                        return toJawaObject((JSONObject)ret);
-                    else if (ret instanceof JSONArray)
-                        return toJawaArray((JSONArray)ret);
-                    else if (ret instanceof String)
-                        return new JawaObjectRef((String)ret);
-                    else if (ret instanceof Integer)
-                        return new JawaObjectRef((Integer)ret);
-                    else if (ret instanceof Long)
-                        return new JawaObjectRef((Long)ret);
-                    else if (ret instanceof Double)
-                        return new JawaObjectRef((Double)ret);
-                    else if (ret instanceof Boolean)
-                        return new JawaObjectRef((Boolean)ret);
-                    return null;
+                    return toJawa(ret);
                 } else
                     return null;
 
@@ -737,7 +724,6 @@ public class Executor {
     }
     ////////////////////////////////////////////////////
 
-    private JSONObject program;
     private JSONObject env;
     private HashMap<String, JawaObjectRef> global = new HashMap<String, JawaObjectRef>();
     private LinkedList<LinkedList<HashMap<String, JawaObjectRef>>> activations = new LinkedList<LinkedList<HashMap<String, JawaObjectRef>>>();
@@ -865,19 +851,24 @@ public class Executor {
                 return left;
             } else {
                 JSONObject leftExpr = getObj(ast, PR_left);
-                if (leftExpr.getInt("t") == STATIC_MEMBER_EXPRESSION) {
-                    JawaObjectRef obj = evaluate(getObj(leftExpr, PR_object));
-                    if (obj != null && obj.object instanceof JawaObject) {
-                        String property = getString(getObj(leftExpr, PR_property), PR_id);
-                        ((JawaObject) obj.object).setProp(property, right);
-                        return right;
-                    }
-                } else if (leftExpr.getInt("t") == COMPUTED_MEMBER_EXPRESSION) {
-                    JawaObjectRef obj = evaluate(getObj(leftExpr, PR_object));
-                    if (obj != null && obj.object instanceof JawaObject) {
-                        String property = evaluate(getObj(leftExpr, PR_property)).toString();
-                        ((JawaObject) obj.object).setProp(property, right);
-                        return right;
+                JawaObjectRef obj = evaluate(getObj(leftExpr, PR_object));
+                if (obj != null) {
+                    int t = leftExpr.getInt("t");
+                    if (t == STATIC_MEMBER_EXPRESSION) {
+                        if (obj.object instanceof JawaObject) {
+                            String property = getString(getObj(leftExpr, PR_property), PR_id);
+                            ((JawaObject) obj.object).setProp(property, right);
+                            return right;
+                        }
+                    } else if (t == COMPUTED_MEMBER_EXPRESSION) {
+                        if (obj.object instanceof JawaObject) {
+                            JawaObjectRef computed = evaluate(getObj(leftExpr, PR_property));
+                            if (computed == null)
+                                throw new JawascriptRuntimeException("Computed member for object is null.");
+                            String property = computed.toString();
+                            ((JawaObject) obj.object).setProp(property, right);
+                            return right;
+                        }
                     }
                 }
             }
@@ -1760,24 +1751,29 @@ public class Executor {
             throw new JawascriptRuntimeException("Unknown literal type.");
     }
 
+    private JawaObjectRef toJawa(Object val) {
+        if (val instanceof JSONObject)
+            return toJawaObject((JSONObject)val);
+        else if (val instanceof JSONArray)
+            return toJawaArray((JSONArray) val);
+        else if (val instanceof String)
+            return new JawaObjectRef(val.toString());
+        else if (val instanceof Integer)
+            return new JawaObjectRef((Integer)val);
+        else if (val instanceof Boolean)
+            return new JawaObjectRef((Boolean)val);
+        else if (val instanceof Double)
+            return new JawaObjectRef((Double)val);
+        else if (val instanceof Long)
+            return new JawaObjectRef((Long)val);
+        return null;
+    }
+
     private JawaObjectRef toJawaArray(JSONArray json) {
         JawaArray arr = new JawaArray();
         for (int i = 0 ; i < json.length() ; i++) {
             Object val = json.opt(i);
-            if (val instanceof JSONObject)
-                arr.append(toJawaObject((JSONObject)val));
-            else if (val instanceof JSONArray)
-                arr.append(toJawaArray((JSONArray) val));
-            else if (val instanceof String)
-                arr.append(new JawaObjectRef(val.toString()));
-            else if (val instanceof Integer)
-                arr.append(new JawaObjectRef((Integer)val));
-            else if (val instanceof Boolean)
-                arr.append(new JawaObjectRef((Boolean)val));
-            else if (val instanceof Double)
-                arr.append(new JawaObjectRef((Double)val));
-            else if (val instanceof Long)
-                arr.append(new JawaObjectRef((Long)val));
+            arr.append(toJawa(val));
         }
         return new JawaObjectRef(arr);
     }
@@ -1788,20 +1784,7 @@ public class Executor {
         while (keys.hasNext()) {
             String key = (String)keys.next();
             Object val = json.opt(key);
-            if (val instanceof JSONObject)
-                obj.setProp(key, toJawaObject((JSONObject)val));
-            else if (val instanceof JSONArray)
-                obj.setProp(key, toJawaArray((JSONArray) val));
-            else if (val instanceof String)
-                obj.setProp(key, new JawaObjectRef(val.toString()));
-            else if (val instanceof Integer)
-                obj.setProp(key, new JawaObjectRef((Integer)val));
-            else if (val instanceof Boolean)
-                obj.setProp(key, new JawaObjectRef((Boolean)val));
-            else if (val instanceof Double)
-                obj.setProp(key, new JawaObjectRef((Double)val));
-            else if (val instanceof Long)
-                obj.setProp(key, new JawaObjectRef((Long)val));
+            obj.setProp(key, toJawa(val));
         }
         return new JawaObjectRef(obj);
     }
@@ -1850,8 +1833,7 @@ public class Executor {
     }
 
     public void execute(JSONObject ast) throws JSONException, JawascriptRuntimeException {
-        program = ast;
-        evaluate(program);
+        evaluate(ast);
     }
 
     public JSONObject invoke(String funcName, JSONObject input) throws JSONException, JawascriptRuntimeException {
