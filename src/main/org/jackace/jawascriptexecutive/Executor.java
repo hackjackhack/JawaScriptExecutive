@@ -1330,7 +1330,7 @@ public class Executor {
         //System.out.println("Running STATIC_MEMBER_EXPRESSION");
         JawaObjectRef object = evaluate(getObj(ast, PR_object));
         String property = getString(getObj(ast, PR_property), PR_id);
-        if (object == null)
+        if (object == null || object.object == null)
             throw new JawascriptRuntimeException("Null cannot have any properties.");
         if (object.object instanceof JawaObject) {
             JawaObjectRef prop = ((JawaObject) object.object).getProp(property);
