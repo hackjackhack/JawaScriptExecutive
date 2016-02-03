@@ -1038,4 +1038,30 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", params).toString().trim());
     }
+
+    @Test
+    public void testExecute31 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var a = 12345678998712;
+    var b = a / 1000;
+    var c = parseInt(b);
+    return c;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"number","retValue":12345678998}
+*/);
+        JSONArray adlist = new JSONArray();
+        adlist.put(1);
+        adlist.put(2);
+        adlist.put(3);
+        JSONObject params = new JSONObject();
+        params.put("lala", adlist);
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,1.2345678998712E13\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"b\",\"27\":{\"t\":17,\"15\":[{\"t\":5,\"v\":\"/\"}],\"16\":[{\"t\":24,\"3\":\"a\"},{\"t\":25,\"8\":\"NUMERIC_LITERAL,1000.0\"}]}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"c\",\"27\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"b\"}]},\"12\":{\"t\":24,\"3\":\"parseInt\"}}}]},{\"t\":36,\"32\":{\"t\":24,\"3\":\"c\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", params).toString().trim());
+    }
 }

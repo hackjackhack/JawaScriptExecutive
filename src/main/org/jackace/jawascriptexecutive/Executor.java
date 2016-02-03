@@ -30,14 +30,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 
 /**
  * Created by Chi-Wei(Jack) Wang on 2015/12/25.
@@ -182,6 +177,10 @@ public class Executor {
                 double value = (Double)this.object;
                 if (Math.abs(Math.round(value) - value) < QUANTUM) {
                     return Long.toString(Math.round(value));
+                } else {
+                    DecimalFormat df = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+                    df.setMaximumFractionDigits(340);
+                    return df.format(value);
                 }
             } else if (this.object instanceof Boolean) {
                 return Boolean.toString((Boolean)this.object);
@@ -294,8 +293,6 @@ public class Executor {
                 JawaObjectRef value = this.properties.get(key);
                 if (value.object instanceof StringBuilder)
                     ret.append("\"").append(value.toString().replace("\"", "\\\"")).append("\"");
-                else if (value.object instanceof JawaArray)
-                    ((JawaArray)(value.object)).toJSON(ret);
                 else if (value.object instanceof JawaObject)
                     ((JawaObject)(value.object)).toJSON(ret);
                 else
@@ -370,9 +367,7 @@ public class Executor {
                     ret.append(",");
                 first = false;
                 if (obj.object instanceof StringBuilder)
-                    ret.append('"').append(obj.toString()).append('"');
-                else if (obj.object instanceof JawaArray)
-                    ((JawaArray)obj.object).toJSON(ret);
+                    ret.append('"').append(obj.toString().replace("\"", "\\\"")).append('"');
                 else if (obj.object instanceof JawaObject)
                     ((JawaObject)obj.object).toJSON(ret);
                 else
@@ -1089,9 +1084,9 @@ public class Executor {
         for (int i = 1 ; i < oprnds.length() ; i++) {
             JawaObjectRef secondOprnd = evaluate(oprnds.getJSONObject(i));
             String op = ops.getJSONObject(i - 1).getString("v");
-            if (firstOprnd == null)
+            if (firstOprnd == null || firstOprnd.object == null)
                 firstOprnd = new JawaObjectRef(0);
-            if (secondOprnd == null)
+            if (secondOprnd == null || secondOprnd.object == null)
                 secondOprnd = new JawaObjectRef(0);
             if (op.equals("<")) {
                 if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder) {
@@ -1099,28 +1094,28 @@ public class Executor {
                 } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Double) {
                     firstOprnd = new JawaObjectRef((Double)firstOprnd.object < (Double)secondOprnd.object);
                 } else
-                    throw new JawascriptRuntimeException("Invalid type for relational op");
+                    throw new JawascriptRuntimeException("Invalid type for operator <");
             } else if (op.equals(">")) {
                 if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder) {
                     firstOprnd = new JawaObjectRef(firstOprnd.object.toString().compareTo(secondOprnd.object.toString()) > 0);
                 } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Double) {
                     firstOprnd = new JawaObjectRef((Double)firstOprnd.object > (Double)secondOprnd.object);
                 } else
-                    throw new JawascriptRuntimeException("Invalid type for relational op");
+                    throw new JawascriptRuntimeException("Invalid type for operator >");
             } else if (op.equals("<=")) {
                 if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder) {
                     firstOprnd = new JawaObjectRef(firstOprnd.object.toString().compareTo(secondOprnd.object.toString()) <= 0);
                 } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Double) {
                     firstOprnd = new JawaObjectRef((Double)firstOprnd.object <= (Double)secondOprnd.object);
                 } else
-                    throw new JawascriptRuntimeException("Invalid type for relational op");
+                    throw new JawascriptRuntimeException("Invalid type for operator <=");
             } else if (op.equals(">=")) {
                 if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder) {
                     firstOprnd = new JawaObjectRef(firstOprnd.object.toString().compareTo(secondOprnd.object.toString()) >= 0);
                 } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Double) {
                     firstOprnd = new JawaObjectRef((Double)firstOprnd.object >= (Double)secondOprnd.object);
                 } else
-                    throw new JawascriptRuntimeException("Invalid type for relational op");
+                    throw new JawascriptRuntimeException("Invalid type for operator >=");
             } else {
                 throw new JawascriptRuntimeException("Not yet implemented : " + op);
             }
@@ -1394,16 +1389,16 @@ public class Executor {
         //System.out.println("Running COMPUTED_MEMBER_EXPRESSION");
         JawaObjectRef object = evaluate(getObj(ast, PR_object));
         JawaObjectRef property = evaluate(getObj(ast, PR_property));
-        if (object == null)
+        if (object == null || object.object == null)
             throw new JawascriptRuntimeException("Null cannot have any properties.");
-        if (property == null)
+        if (property == null || property.object == null)
             throw new JawascriptRuntimeException("Property name cannot compute to null.");
         if (object.object instanceof JawaArray) {
             if (property.object instanceof Double) {
                 double value = (Double) property.object;
                 if (Math.abs(Math.round(value) - value) < QUANTUM) {
                     long index = Math.round(value);
-                    if (index > Integer.MAX_VALUE)
+                    if (index > Integer.MAX_VALUE || index < 0)
                         return null;
                     return ((JawaArray) object.object).at((int) index);
                 } else {
@@ -1417,7 +1412,7 @@ public class Executor {
                 double value = (Double) property.object;
                 if (Math.abs(Math.round(value) - value) < QUANTUM) {
                     long index = Math.round(value);
-                    if (index > Integer.MAX_VALUE)
+                    if (index > Integer.MAX_VALUE || index < 0)
                         return null;
                     int indexInt = (int)index;
                     return new JawaObjectRef(object.toString().substring(indexInt, indexInt + 1));
@@ -1510,7 +1505,7 @@ public class Executor {
     private void declare(String id, JawaObjectRef value) throws JawascriptRuntimeException {
         HashMap<String, JawaObjectRef> currentScope = currentActivation.getLast();
         if (currentScope.get(id) != null)
-            throw new JawascriptRuntimeException("Variable redeclaration in the current scope.");
+            throw new JawascriptRuntimeException("Variable redeclaration (" + id + ") in the current scope.");
         JawaObjectRef obj = new JawaObjectRef();
         if (value != null)
             obj.object = value.transfer();
@@ -1605,8 +1600,9 @@ public class Executor {
                 JSONObject init = getObj(ast, PR_init);
                 evaluate(init);
             }
+            JawaObjectRef _T = new JawaObjectRef(true);
 
-            JawaObjectRef cond = test != null ? evaluate(test) : new JawaObjectRef(true);
+            JawaObjectRef cond = test != null ? evaluate(test) : _T;
             while (cond != null && (Boolean)(cond.object)) {
                 evaluate(body);
                 if (currentActivation.getFirst().get("return") != null)
@@ -1617,7 +1613,7 @@ public class Executor {
                     currentIterationScope.remove("continue");
                 if (update != null)
                     evaluate(update);
-                cond = test != null ? evaluate(test) : new JawaObjectRef(true);
+                cond = test != null ? evaluate(test) : _T;
             }
         } else {
             JSONObject iteratorDeclaration = getObj(ast, PR_iterator);
@@ -1867,7 +1863,12 @@ public class Executor {
             retJSON.put("retValue", ret.toString());
         } else if (ret.object instanceof Double){
             retJSON.put("retType", "number");
-            retJSON.put("retValue", ret.object);
+            double value = (Double)ret.object;
+            if (Math.abs(Math.round(value) - value) < QUANTUM) {
+                retJSON.put("retValue", (long) value);
+            } else {
+                retJSON.put("retValue", value);
+            }
         } else if (ret.object instanceof Boolean) {
             retJSON.put("retType", "boolean");
             retJSON.put("retValue", ret.object.toString());
