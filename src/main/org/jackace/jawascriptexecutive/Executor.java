@@ -649,7 +649,10 @@ public class Executor {
             // alert()
             case 0: {
                 JawaObjectRef msg = activations.getLast().getLast().get("msg");
-                System.out.println(msg.toString());
+                if (msg == null)
+                    System.out.println("undefined");
+                else
+                    System.out.println(msg.toString());
                 return null;
             }
             // getenv(varname)
