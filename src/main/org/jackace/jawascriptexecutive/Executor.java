@@ -729,6 +729,7 @@ public class Executor {
     private HashMap<String, JawaObjectRef> currentIterationScope = null;
     private boolean isFromCallExpression = false;
     private ExternalCallback externalCallback = null;
+    private JawaObjectRef NULL_CONSTANT = new JawaObjectRef();
 
     private JawaObjectRef evaluate(JSONObject tree) throws JSONException, JawascriptRuntimeException {
         if (tree == null)
@@ -1050,10 +1051,8 @@ public class Executor {
             boolean inverse = op.startsWith("!");
             if (op.equals("==") || op.equals("!=")) {
                 boolean result;
-                if (firstOprnd == null)
-                    firstOprnd = new JawaObjectRef();
-                if (secondOprnd == null)
-                    secondOprnd = new JawaObjectRef();
+                if (firstOprnd == null) firstOprnd = NULL_CONSTANT;
+                if (secondOprnd == null) secondOprnd = NULL_CONSTANT;
 
                 if (firstOprnd.object == null || secondOprnd.object == null) {
                     result = (firstOprnd.object == secondOprnd.object);
