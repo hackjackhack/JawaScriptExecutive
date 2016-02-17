@@ -1092,4 +1092,55 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute33 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var a = {'abc':123};
+    var r = '';
+    r += (a.def == null) + '|';
+    r += (a.def != null) + '|';
+    var answer = null;
+    var o = {"def": 111};
+    if (o.abc == null) {
+        answer = o.def;
+        r += answer;
+    }
+    return r;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"string","retValue":"true|false|111"}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"abc\",\"5\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,123.0\"}}]}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"r\",\"27\":{\"t\":25,\"8\":\"STRING_LITERAL,\"}}]},{\"t\":5,\"14\":\"PUNCTUATOR,+=\",\"20\":{\"t\":24,\"3\":\"r\"},\"21\":{\"t\":16,\"15\":[{\"t\":5,\"v\":\"+\"}],\"16\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":20,\"10\":{\"t\":24,\"3\":\"a\"},\"11\":{\"t\":24,\"3\":\"def\"}},{\"t\":25,\"8\":\"NULL,null\"}]},{\"t\":25,\"8\":\"STRING_LITERAL,|\"}]}},{\"t\":5,\"14\":\"PUNCTUATOR,+=\",\"20\":{\"t\":24,\"3\":\"r\"},\"21\":{\"t\":16,\"15\":[{\"t\":5,\"v\":\"+\"}],\"16\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":20,\"10\":{\"t\":24,\"3\":\"a\"},\"11\":{\"t\":24,\"3\":\"def\"}},{\"t\":25,\"8\":\"NULL,null\"}]},{\"t\":25,\"8\":\"STRING_LITERAL,|\"}]}},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"answer\",\"27\":{\"t\":25,\"8\":\"NULL,null\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"o\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"def\",\"5\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,111.0\"}}]}}]},{\"t\":35,\"18\":{\"t\":2,\"0\":[{\"t\":5,\"14\":\"PUNCTUATOR,=\",\"20\":{\"t\":24,\"3\":\"answer\"},\"21\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"o\"},\"11\":{\"t\":24,\"3\":\"def\"}}},{\"t\":5,\"14\":\"PUNCTUATOR,+=\",\"20\":{\"t\":24,\"3\":\"r\"},\"21\":{\"t\":24,\"3\":\"answer\"}}]},\"25\":{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":20,\"10\":{\"t\":24,\"3\":\"o\"},\"11\":{\"t\":24,\"3\":\"abc\"}},{\"t\":25,\"8\":\"NULL,null\"}]}},{\"t\":36,\"32\":{\"t\":24,\"3\":\"r\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
+
+    @Test
+    public void testExecute34 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var a = null;
+    var r = '';
+    if (a == null || false) {
+      r += 'xxx';
+    }
+    return r;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"string","retValue":"xxx"}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"NULL,null\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"r\",\"27\":{\"t\":25,\"8\":\"STRING_LITERAL,\"}}]},{\"t\":35,\"18\":{\"t\":2,\"0\":[{\"t\":5,\"14\":\"PUNCTUATOR,+=\",\"20\":{\"t\":24,\"3\":\"r\"},\"21\":{\"t\":25,\"8\":\"STRING_LITERAL,xxx\"}}]},\"25\":{\"t\":7,\"16\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":24,\"3\":\"a\"},{\"t\":25,\"8\":\"NULL,null\"}]},{\"t\":25,\"8\":\"BOOLEAN,false\"}]}},{\"t\":36,\"32\":{\"t\":24,\"3\":\"r\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
 }

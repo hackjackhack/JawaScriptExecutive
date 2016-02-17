@@ -1050,8 +1050,13 @@ public class Executor {
             boolean inverse = op.startsWith("!");
             if (op.equals("==") || op.equals("!=")) {
                 boolean result;
-                if (firstOprnd == null || secondOprnd == null) {
-                    result = (firstOprnd == secondOprnd);
+                if (firstOprnd == null)
+                    firstOprnd = new JawaObjectRef();
+                if (secondOprnd == null)
+                    secondOprnd = new JawaObjectRef();
+
+                if (firstOprnd.object == null || secondOprnd.object == null) {
+                    result = (firstOprnd.object == secondOprnd.object);
                 }
                 else if (firstOprnd.object instanceof StringBuilder && secondOprnd.object instanceof StringBuilder)
                     result = firstOprnd.object.toString().equals(secondOprnd.object.toString());
@@ -1745,7 +1750,7 @@ public class Executor {
         else if (type.equals("BOOLEAN"))
             return new JawaObjectRef(Boolean.parseBoolean(content));
         else if (type.equals("NULL"))
-            return null;
+            return new JawaObjectRef();
         else
             throw new JawascriptRuntimeException("Unknown literal type.");
     }
