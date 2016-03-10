@@ -153,7 +153,7 @@ public class Executor {
     private int toInteger(JawaObjectRef o) throws JawascriptRuntimeException {
         if (o.object instanceof Double) {
             int magnitude = (int)(long) Math.floor(Math.abs((Double) o.object));
-            int sign = ((Double) o.object) > 0 ? 1 : -1;
+            int sign = ((Double) o.object) >= 0 ? 1 : -1;
             return magnitude * sign;
         }
         throw new JawascriptRuntimeException("Not yet implemented conversion.");
@@ -410,7 +410,7 @@ public class Executor {
                         throw new JawascriptRuntimeException("start of slice() must be a number");
                     int startInt = ((Double) start.object).intValue();
                     if (startInt < 0 || startInt >= elements.size())
-                        throw new JawascriptRuntimeException("begin out of bound.");
+                        throw new JawascriptRuntimeException("start of slice() out of bound.");
 
                     int endInt = elements.size();
                     JawaObjectRef end = currentActivation.getLast().get("end");
@@ -418,8 +418,8 @@ public class Executor {
                         if (!(end.object instanceof Double))
                             throw new JawascriptRuntimeException("end of slice() must be a number");
                         endInt = ((Double) end.object).intValue();
-                        if (endInt < 0 || endInt >= elements.size())
-                            throw new JawascriptRuntimeException("begin out of bound.");
+                        if (endInt < 0 || endInt > elements.size())
+                            throw new JawascriptRuntimeException("end of slice() out of bound.");
                     }
 
                     JawaArray slice = new JawaArray();
@@ -956,7 +956,7 @@ public class Executor {
 
         for (int i = 0 ; i < oprnds.length() ; i++) {
             JawaObjectRef oprnd = evaluate(oprnds.getJSONObject(i));
-            if (oprnd == null || oprnd.object instanceof Boolean && (Boolean)oprnd.object ||
+            if (oprnd.object instanceof Boolean && (Boolean)oprnd.object ||
                     oprnd.object instanceof StringBuilder && !oprnd.object.toString().isEmpty() ||
                     oprnd.object instanceof Double && (Double)oprnd.object != 0 ||
                     oprnd.object instanceof JawaFunc ||
@@ -974,11 +974,8 @@ public class Executor {
         for (int i = 0 ; i < oprnds.length() ; i++) {
             JawaObjectRef oprnd = evaluate(oprnds.getJSONObject(i));
             if (oprnd == null || oprnd.object instanceof Boolean && !(Boolean)oprnd.object ||
-                    oprnd.object instanceof StringBuilder ||
-                    oprnd.object instanceof Double ||
-                    oprnd.object instanceof JawaFunc ||
-                    oprnd.object instanceof JawaArray ||
-                    oprnd.object instanceof JawaObject)
+                    oprnd.object instanceof StringBuilder && oprnd.object.toString().isEmpty()||
+                    oprnd.object instanceof Double && (Double)oprnd.object == 0)
                 return oprnd;
         }
         return new JawaObjectRef(true);
