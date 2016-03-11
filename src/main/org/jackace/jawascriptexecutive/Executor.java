@@ -685,9 +685,10 @@ public class Executor {
 
                 // Sign
                 int sign = 1;
-                if (str.charAt(0) == '+' || str.charAt(0) == '-') {
+                char sc = str.charAt(0);
+                if (sc == '+' || sc == '-') {
+                    sign = (sc == '+' ? 1 : -1);
                     str = str.substring(1);
-                    sign = str.charAt(0) == '+' ? 1 : -1;
                 }
 
                 // Radix
@@ -700,14 +701,16 @@ public class Executor {
                     str = str.substring(2);
                 }
 
-                //
+                // Conversion
                 if (radix > 36)
                     throw new JawascriptRuntimeException("Invalid radix : " + radix);
-                String validDigits = "0123456789abcdefghijklmnopqrstuvwxyz".substring(0, radix);
                 int end;
                 for (end = 0 ; end < str.length() ; end++) {
-                    char c = str.charAt(end);
-                    if (validDigits.indexOf(c) == -1)
+                    int c = str.charAt(end);
+                    if (c >= '0' && c <= '9') c -= '0';
+                    else if (c >= 'a' && c <= 'z') c = c - 'a' + 10;
+                    else break;
+                    if (c >= radix)
                         break;
                 }
                 str = str.substring(0, end);
