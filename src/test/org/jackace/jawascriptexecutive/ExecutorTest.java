@@ -1143,4 +1143,53 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute35 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var a = {name:'a'};
+    var b = {name:'b'};
+    a.key = b;
+    b.key = a;
+    return null;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"null"}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"name\",\"5\":{\"t\":25,\"8\":\"STRING_LITERAL,a\"}}]}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"b\",\"27\":{\"t\":28,\"6\":[{\"t\":39,\"4\":\"name\",\"5\":{\"t\":25,\"8\":\"STRING_LITERAL,b\"}}]}}]},{\"t\":36,\"32\":{\"t\":25,\"8\":\"NULL,null\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
+
+    @Test
+    public void testExecute36 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+  var arr = [];
+  arr.push(5 == true);
+  arr.push(0 == true);
+  arr.push(5 == false);
+  arr.push(0 == false);
+  arr.push(5 != true);
+  arr.push(0 != true);
+  arr.push(5 != false);
+  arr.push(0 != false);
+  return arr;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"array","retValue":[true,false,false,true,false,true,true,false]}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"arr\",\"27\":{\"t\":27,\"7\":[]}}]},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,5.0\"},{\"t\":25,\"8\":\"BOOLEAN,true\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,0.0\"},{\"t\":25,\"8\":\"BOOLEAN,true\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,5.0\"},{\"t\":25,\"8\":\"BOOLEAN,false\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"==\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,0.0\"},{\"t\":25,\"8\":\"BOOLEAN,false\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,5.0\"},{\"t\":25,\"8\":\"BOOLEAN,true\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,0.0\"},{\"t\":25,\"8\":\"BOOLEAN,true\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,5.0\"},{\"t\":25,\"8\":\"BOOLEAN,false\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":12,\"15\":[{\"t\":5,\"v\":\"!=\"}],\"16\":[{\"t\":25,\"8\":\"NUMERIC_LITERAL,0.0\"},{\"t\":25,\"8\":\"BOOLEAN,false\"}]}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":36,\"32\":{\"t\":24,\"3\":\"arr\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
 }

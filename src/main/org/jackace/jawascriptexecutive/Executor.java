@@ -1063,6 +1063,13 @@ public class Executor {
                     result = ((Double)firstOprnd.object).doubleValue() == ((Double)secondOprnd.object).doubleValue();
                 else if (firstOprnd.object instanceof Boolean && secondOprnd.object instanceof Boolean)
                     result = ((Boolean)firstOprnd.object).booleanValue() == ((Boolean)secondOprnd.object).booleanValue();
+                else if (firstOprnd.object instanceof Boolean && secondOprnd.object instanceof Double) {
+                    double r = ((Double) secondOprnd.object).doubleValue();
+                    result = ((Boolean) firstOprnd.object).booleanValue() ? r != 0 : r == 0;
+                } else if (firstOprnd.object instanceof Double && secondOprnd.object instanceof Boolean) {
+                    double l = ((Double) firstOprnd.object).doubleValue();
+                    result = ((Boolean) secondOprnd.object).booleanValue() ? l != 0 : l == 0;
+                }
                 else if (firstOprnd.object instanceof JawaFunc ||
                         firstOprnd.object instanceof JawaArray ||
                         firstOprnd.object instanceof JawaObject ||
