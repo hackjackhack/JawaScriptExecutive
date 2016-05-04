@@ -271,7 +271,9 @@ public class Executor {
                 first = false;
                 ret += key + ":";
                 JawaObjectRef value = this.properties.get(key);
-                if (value.object instanceof StringBuilder)
+                if (value == null)
+                    ret += "null";
+                else if (value.object instanceof StringBuilder)
                     ret += "'" + value.toString() + "'";
                 else
                     ret += value.toString();
@@ -291,7 +293,9 @@ public class Executor {
                 first = false;
                 ret.append("\"").append(key).append("\":");
                 JawaObjectRef value = this.properties.get(key);
-                if (value.object instanceof StringBuilder)
+                if (value == null)
+                    ret.append("null");
+                else if (value.object instanceof StringBuilder)
                     ret.append("\"").append(value.toString().replace("\"", "\\\"")).append("\"");
                 else if (value.object instanceof JawaObject)
                     ((JawaObject)(value.object)).toJSON(ret);
@@ -718,6 +722,26 @@ public class Executor {
                     return new JawaObjectRef(0);
 
                 return new JawaObjectRef(sign * Long.parseLong(str, radix));
+            }
+            // isDefined(varname)
+            case 4: {
+                String varname = currentActivation.getLast().get("varname").toString();
+                // Temporarily switch back to last activation since isDefined should search
+                // in the same activation where it is called.
+                LinkedList<HashMap<String, JawaObjectRef>> oldCurrentActivation = currentActivation;
+                currentActivation = activations.get(activations.size() - 2);
+                JawaObjectRef ret = new JawaObjectRef(searchIdentifier(varname) != null);
+                currentActivation = oldCurrentActivation;
+                return ret;
+            }
+            // parseJSON(string)
+            case 5: {
+                String str = currentActivation.getLast().get("string").toString();
+                try {
+                    return toJawaObject(new JSONObject(str));
+                } catch (JSONException e) {
+                    return null;
+                }
             }
             default:
                 throw new JawascriptRuntimeException("BuiltIn function not found : " + funcName);
@@ -1377,9 +1401,13 @@ public class Executor {
         HashMap<String, JawaObjectRef> scope = new HashMap<String, JawaObjectRef>();
         for (int i = 0 ; i < arguments.length() ; i++) {
             JSONObject argument = arguments.getJSONObject(i);
-            JawaObjectRef evaluated = evaluate(argument);
             String paramName = resolvedFunction.params.get(i);
-            scope.put(paramName, evaluated);
+            JawaObjectRef evaluated = evaluate(argument);
+            if (resolvedFunction.name.equals("isDefined") && argument.getInt("t") == IDENTIFIER) {
+                scope.put(paramName, new JawaObjectRef(getString(argument, PR_id)));
+            } else {
+                scope.put(paramName, evaluated);
+            }
         }
 
         LinkedList<HashMap<String, JawaObjectRef>> activation = new LinkedList<HashMap<String, JawaObjectRef>>();
@@ -1497,8 +1525,7 @@ public class Executor {
         return new JawaObjectRef(ret);
     }
 
-    private JawaObjectRef resolveIdentifier(JSONObject ast) throws JSONException, JawascriptRuntimeException {
-        String id = getString(ast, PR_id);
+    private JawaObjectRef searchIdentifier(String id) throws JSONException{
         // Search in the current activation. innermost scope first
         Iterator<HashMap<String, JawaObjectRef>> iter = currentActivation.descendingIterator();
         while (iter.hasNext()) {
@@ -1509,11 +1536,13 @@ public class Executor {
         }
 
         // Search the global environment
-        JawaObjectRef ret = global.get(id);
-        if (ret != null)
-            return ret;
+        return global.get(id);
+    }
 
-        throw new JawascriptRuntimeException("Unresolvable identifier: " + id);
+    private JawaObjectRef resolveIdentifier(JSONObject ast) throws JSONException {
+        String id = getString(ast, PR_id);
+        JawaObjectRef ret = searchIdentifier(id);
+        return ret;
     }
 
     private void declare(String id, JawaObjectRef value) throws JawascriptRuntimeException {
@@ -1811,6 +1840,8 @@ public class Executor {
         registerBuiltinFunc(builtinFunctions, "getenv", Collections.singletonList("varname"));
         registerBuiltinFunc(builtinFunctions, "extern", Arrays.asList("functionName", "argument"));
         registerBuiltinFunc(builtinFunctions, "parseInt", Arrays.asList("string", "radix"));
+        registerBuiltinFunc(builtinFunctions, "isDefined", Collections.singletonList("varname"));
+        registerBuiltinFunc(builtinFunctions, "parseJSON", Collections.singletonList("string"));
         for (String f : builtinFunctions.keySet()) {
             global.put(f, new JawaObjectRef(builtinFunctions.get(f)));
         }

@@ -1192,4 +1192,48 @@ function test() {
 
         assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
     }
+
+    @Test
+    public void testExecute37 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+  var a = 5;
+  var arr = [];
+  arr.push(isDefined(a));
+  arr.push(isDefined(b));
+  arr.push(isDefined(lalala));
+  arr.push(isDefined(parseInt));
+  arr.push(isDefined(parseIn2));
+  return arr;
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"array","retValue":[true,false,false,true,false]}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"NUMERIC_LITERAL,5.0\"}}]},{\"t\":37,\"33\":[{\"t\":34,\"26\":\"arr\",\"27\":{\"t\":27,\"7\":[]}}]},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"a\"}]},\"12\":{\"t\":24,\"3\":\"isDefined\"}}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"b\"}]},\"12\":{\"t\":24,\"3\":\"isDefined\"}}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"lalala\"}]},\"12\":{\"t\":24,\"3\":\"isDefined\"}}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"parseInt\"}]},\"12\":{\"t\":24,\"3\":\"isDefined\"}}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"parseIn2\"}]},\"12\":{\"t\":24,\"3\":\"isDefined\"}}]},\"12\":{\"t\":20,\"10\":{\"t\":24,\"3\":\"arr\"},\"11\":{\"t\":24,\"3\":\"push\"}}},{\"t\":36,\"32\":{\"t\":24,\"3\":\"arr\"}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
+
+    @Test
+    public void testExecute38 () throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+  var a = '{aaa: [1,2,3,4,5], bbb:"xxxx",}';
+  return parseJSON(a);
+}
+        */);
+        String answer = MultiLineStringLiteral.S(/*
+{"retType":"object","retValue":{"aaa":[1,2,3,4,5],"bbb":"xxxx"}}
+*/);
+
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"STRING_LITERAL,{aaa: [1,2,3,4,5], bbb:\\\"xxxx\\\",}\"}}]},{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"a\"}]},\"12\":{\"t\":24,\"3\":\"parseJSON\"}}}]}}]}");
+        Executor ex = new Executor();
+        ex.execute(json);
+
+        assertEquals(answer.trim(), ex.invoke("test", null).toString().trim());
+    }
 }
