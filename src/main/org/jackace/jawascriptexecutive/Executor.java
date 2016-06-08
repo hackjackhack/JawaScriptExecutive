@@ -293,7 +293,7 @@ public class Executor {
                 first = false;
                 ret.append("\"").append(key).append("\":");
                 JawaObjectRef value = this.properties.get(key);
-                if (value == null)
+                if (value == null || value.object == null)
                     ret.append("null");
                 else if (value.object instanceof StringBuilder)
                     ret.append("\"").append(value.toString().replace("\"", "\\\"")).append("\"");
