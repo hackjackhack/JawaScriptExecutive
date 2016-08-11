@@ -1222,7 +1222,7 @@ function test() {
     public void testExecute38 () throws Exception {
         String program = MultiLineStringLiteral.S(/*
 function test() {
-  var a = '{aaa: [1,2,3,4,5], bbb:"xxxx",}';
+  var a = '{"aaa": [1,2,3,4,5], "bbb":"xxxx"}';
   return parseJSON(a);
 }
         */);
@@ -1230,7 +1230,7 @@ function test() {
 {"retType":"object","retValue":{"aaa":[1,2,3,4,5],"bbb":"xxxx"}}
 */);
 
-        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"STRING_LITERAL,{aaa: [1,2,3,4,5], bbb:\\\"xxxx\\\",}\"}}]},{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"a\"}]},\"12\":{\"t\":24,\"3\":\"parseJSON\"}}}]}}]}");
+        JSONObject json = new JSONObject("{\"t\":0,\"0\":[{\"t\":1,\"3\":\"test\",\"23\":[],\"24\":{\"t\":2,\"0\":[{\"t\":37,\"33\":[{\"t\":34,\"26\":\"a\",\"27\":{\"t\":25,\"8\":\"STRING_LITERAL,{\\\"aaa\\\": [1,2,3,4,5], \\\"bbb\\\":\\\"xxxx\\\"}\"}}]},{\"t\":36,\"32\":{\"t\":21,\"2\":{\"t\":26,\"2\":[{\"t\":24,\"3\":\"a\"}]},\"12\":{\"t\":24,\"3\":\"parseJSON\"}}}]}}]}");
         Executor ex = new Executor();
         ex.execute(json);
 
